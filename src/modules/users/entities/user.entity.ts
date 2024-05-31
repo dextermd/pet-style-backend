@@ -14,6 +14,7 @@ import {
 } from 'typeorm';
 import { Role } from 'src/modules/roles/entities/role.entity';
 import { RefreshToken } from '../../refresh_token/entities/refresh_token.entity';
+import { Pet } from 'src/modules/pets/entities/pet.entity';
 
 @Entity({ name: 'users' })
 export class User extends EntityBaseWithDate(EntityBase(EmptyEntity)) {
@@ -53,10 +54,13 @@ export class User extends EntityBaseWithDate(EntityBase(EmptyEntity)) {
   @OneToMany(() => RefreshToken, (refreshToken) => refreshToken.user)
   refreshTokens: RefreshToken[];
 
+  @OneToMany(() => Pet, (pet) => pet.user)
+  pets: Pet[];
+
   @BeforeInsert()
   async hashPassword() {
     if (this.password) {
-    this.password = await hash(this.password, Number(process.env.HASH_SALT));
+      this.password = await hash(this.password, Number(process.env.HASH_SALT));
     }
   }
 }

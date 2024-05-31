@@ -1,15 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import * as path from 'path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
-  });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.useStaticAssets(path.join(__dirname, '..', 'uploads'));
   app.useGlobalPipes(new ValidationPipe({ forbidUnknownValues: false }));
   app.setGlobalPrefix('api');
-  Logger.log('Application is running...');
+
   await app.listen(3000, `${process.env.BASE_HOST}` || 'localhost');
-  Logger.log('Application is running on: ' + process.env.BASE_HOST);
 }
 bootstrap();

@@ -7,6 +7,8 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { RefreshTokenModule } from './modules/refresh_token/refresh_token.module';
+import { PetsModule } from './modules/pets/pets.module';
+import { FilesModule } from './modules/files/files.module';
 
 import dbConfiguration from './db/config/db.config';
 
@@ -26,6 +28,8 @@ import dbConfiguration from './db/config/db.config';
     AuthModule,
     RolesModule,
     RefreshTokenModule,
+    PetsModule,
+    FilesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
