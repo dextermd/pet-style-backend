@@ -1,13 +1,9 @@
-import {
-  EmptyEntity,
-  EntityBase,
-  EntityBaseWithDate,
-} from 'src/common/abstracts/entities';
+import { EntityBase, EntityBaseWithDate } from 'src/common/abstracts/entities';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity({ name: 'pets' })
-export class Pet extends EntityBaseWithDate(EntityBase(EmptyEntity)) {
+export class Pet extends EntityBaseWithDate(EntityBase(BaseEntity)) {
   @Column()
   photo: string;
 
@@ -32,7 +28,7 @@ export class Pet extends EntityBaseWithDate(EntityBase(EmptyEntity)) {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ nullable: true })
+  @Column()
   birthDate: Date;
 
   @ManyToOne(() => User, (user) => user.pets)

@@ -1,19 +1,15 @@
 import { Type } from 'class-transformer';
 import {
-  IsDate,
+  IsDate, IsInt,
   IsNotEmpty,
   IsNumber,
   IsString,
   Max,
   MaxLength,
-  Min,
-} from 'class-validator';
+  Min
+} from "class-validator";
 
 export class CreatePetDto {
-  @IsNotEmpty()
-  @IsString()
-  photo: string;
-
   @IsNotEmpty()
   @IsString()
   name: string;
@@ -37,13 +33,10 @@ export class CreatePetDto {
   gender: string;
 
   @IsNotEmpty()
-  @IsNumber()
-  @Max(50, {
-    message: 'The weight must be a maximum of 50.',
-  })
-  @Min(1, {
-    message: 'The weight must be at least 1.',
-  })
+  @IsInt()
+  @Type(() => Number)
+  @Min(1, { message: 'The weight must be at least 1.' })
+  @Max(50, { message: 'The weight must be a maximum of 50.' })
   weight: number;
 
   @IsNotEmpty()
@@ -59,4 +52,7 @@ export class CreatePetDto {
 
   @IsString()
   description?: string;
+
+  @IsString()
+  photo?: string;
 }

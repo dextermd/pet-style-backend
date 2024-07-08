@@ -8,11 +8,14 @@ import {
   Delete,
   UseGuards,
   Req,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { PetsService } from './pets.service';
 import { CreatePetDto } from './dto/create-pet.dto';
 import { UpdatePetDto } from './dto/update-pet.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('pets')
 export class PetsController {
@@ -20,9 +23,10 @@ export class PetsController {
 
   @UseGuards(JwtAuthGuard)
   @Post() // http://localhost/api/pets -> POST
-  create(@Body() createPetDto: CreatePetDto, @Req() req) {
+  @UseInterceptors(FileInterceptor('file'))
+  create(@UploadedFile() file, @Body() createPetDto: CreatePetDto, @Req() req) {
     const userId = req.user.userId;
-    return this.petsService.create(createPetDto, userId);
+    return this.petsService.create(createPetDto, file, userId);
   }
 
   @UseGuards(JwtAuthGuard)

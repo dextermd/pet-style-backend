@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   Post,
   Put,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -43,7 +44,7 @@ export class UsersController {
   @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
   @UseGuards(JwtAuthGuard, JwtRolesGuard)
   @Put(':id') // http://localhost/api/users:id -> PUT
-  async upate(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() user: UpdateUserDto,
   ) {
@@ -64,9 +65,21 @@ export class UsersController {
       }),
     )
     file: Express.Multer.File,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe) id: number, // http://localhost/api/users/upload/1 -> PUT
     @Body() user: UpdateUserDto,
   ) {
     return await this.usersService.updateWithImage(file, id, user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('me') // http://localhost/api/users/me -> GET
+  async getMe(@Req() req) {
+    return await this.usersService.getMe(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('mePets') // http://localhost/api/users/mePets -> GET
+  async getMePets(@Req() req) {
+    return await this.usersService.getMePets(req.user.userId);
   }
 }

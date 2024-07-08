@@ -1,13 +1,9 @@
-import {
-  EmptyEntity,
-  EntityBase,
-  EntityBaseWithDate,
-} from 'src/common/abstracts/entities';
+import { EntityBase, EntityBaseWithDate } from 'src/common/abstracts/entities';
 import { User } from 'src/modules/users/entities/user.entity';
-import { Column, Entity, ManyToMany } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToMany } from 'typeorm';
 
 @Entity({ name: 'roles' })
-export class Role extends EntityBaseWithDate(EntityBase(EmptyEntity)) {
+export class Role extends EntityBaseWithDate(EntityBase(BaseEntity)) {
   @Column({ unique: true })
   name: string;
 

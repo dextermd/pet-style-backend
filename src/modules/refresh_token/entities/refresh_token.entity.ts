@@ -1,13 +1,12 @@
-import { Column, Entity, ManyToOne } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne } from 'typeorm';
 import {
-  EmptyEntity,
   EntityBase,
   EntityBaseWithDate,
 } from '../../../common/abstracts/entities';
 import { User } from '../../users/entities/user.entity';
 
 @Entity({ name: 'refresh_token' })
-export class RefreshToken extends EntityBaseWithDate(EntityBase(EmptyEntity)) {
+export class RefreshToken extends EntityBaseWithDate(EntityBase(BaseEntity)) {
   @Column()
   token: string;
 

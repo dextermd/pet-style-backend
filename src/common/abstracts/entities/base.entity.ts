@@ -2,6 +2,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   PrimaryGeneratedColumn,
+  IsNull,
 } from 'typeorm';
 
 export type Constructor<T = object> = new (...args: any[]) => T;
@@ -22,7 +23,6 @@ export function EntityBaseWithDate<TBase extends Constructor>(Base: TBase) {
     @CreateDateColumn({
       name: 'created_at',
       type: 'timestamp',
-      nullable: true,
       default: () => 'CURRENT_TIMESTAMP(6)',
     })
     createdAt: Date;
@@ -31,7 +31,7 @@ export function EntityBaseWithDate<TBase extends Constructor>(Base: TBase) {
       name: 'updated_at',
       type: 'timestamp',
       default: () => 'CURRENT_TIMESTAMP(6)',
-      onUpdate: 'CURRENT_TIMESTAMP(6)',
+      onUpdate: 'CURRENT_TIMESTAMP()',
     })
     updatedAt: Date;
   }

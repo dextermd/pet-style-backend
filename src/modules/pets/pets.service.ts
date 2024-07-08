@@ -1,5 +1,7 @@
 import {
   ConflictException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -7,9 +9,9 @@ import { CreatePetDto } from './dto/create-pet.dto';
 import { UpdatePetDto } from './dto/update-pet.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Pet } from './entities/pet.entity';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
-import { log } from 'console';
+import { FilesService } from '../files/files.service';
 
 @Injectable()
 export class PetsService {
@@ -18,25 +20,37 @@ export class PetsService {
     private petRepository: Repository<Pet>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private filesService: FilesService,
   ) {}
 
-  async create(createPetDto: CreatePetDto, userId: number) {
+  async create(createPetDto: CreatePetDto, photo: any, userId: number) {
+    if (!userId) {
+      throw new HttpException('User id not fount', HttpStatus.BAD_REQUEST);
+    }
+
+    await this.filesService.handleFileUpload(photo);
+
     const petData = { ...createPetDto };
 
-    // Проверка на существование петомца у пользователя с именем нового питомца
     const pet = await this.petRepository.findOne({
-      where: { userId, name: petData.name },
+      where: {
+        userId,
+        name: ILike(petData.name), // ILike без учета регистра
+      },
     });
+
     if (pet) {
-      throw new ConflictException('Pet with this name already exists');
+      throw new ConflictException('Питомец с таким именем уже существует');
     }
 
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException('Пользователь не найден');
     }
+
     const newPet = this.petRepository.create(petData);
     newPet.userId = user.id;
+    newPet.photo = photo.filename;
     return await this.petRepository.save(newPet);
   }
 
@@ -44,8 +58,12 @@ export class PetsService {
     return `This action returns all pets`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} pet`;
+  async findOne(id: number) {
+    const pet = await this.petRepository.findOne({ where: { id } });
+    if (!pet) {
+      throw new NotFoundException('Петомец не найден');
+    }
+    return pet;
   }
 
   update(id: number, updatePetDto: UpdatePetDto) {

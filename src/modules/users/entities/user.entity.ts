@@ -1,10 +1,7 @@
-import {
-  EmptyEntity,
-  EntityBase,
-  EntityBaseWithDate,
-} from 'src/common/abstracts/entities';
+import { EntityBase, EntityBaseWithDate } from 'src/common/abstracts/entities';
 import { hash } from 'bcrypt';
 import {
+  BaseEntity,
   BeforeInsert,
   Column,
   Entity,
@@ -17,7 +14,7 @@ import { RefreshToken } from '../../refresh_token/entities/refresh_token.entity'
 import { Pet } from 'src/modules/pets/entities/pet.entity';
 
 @Entity({ name: 'users' })
-export class User extends EntityBaseWithDate(EntityBase(EmptyEntity)) {
+export class User extends EntityBaseWithDate(EntityBase(BaseEntity)) {
   @Column()
   name: string;
 

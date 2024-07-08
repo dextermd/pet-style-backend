@@ -11,6 +11,7 @@ import { PetsModule } from './modules/pets/pets.module';
 import { FilesModule } from './modules/files/files.module';
 
 import dbConfiguration from './db/config/db.config';
+import { AdminModule } from './admin.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import dbConfiguration from './db/config/db.config';
     RefreshTokenModule,
     PetsModule,
     FilesModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

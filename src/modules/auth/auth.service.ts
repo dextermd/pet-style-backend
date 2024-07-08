@@ -55,7 +55,7 @@ export class AuthService {
     const { email, password } = loginData;
     const userFound = await this.authRepository.findOne({
       where: { email },
-      relations: ['roles'],
+      relations: ['roles', 'pets'],
     });
 
     if (!userFound) {
@@ -90,7 +90,7 @@ export class AuthService {
 
     const userFound = await this.authRepository.findOne({
       where: { email: tokenEntity.user.email },
-      relations: ['roles'],
+      relations: ['roles', 'pets'],
     });
 
     if (!userFound) {
@@ -146,7 +146,7 @@ export class AuthService {
 
     let user = await this.authRepository.findOne({
       where: { email },
-      relations: ['roles'],
+      relations: ['roles', 'pets'],
     });
 
     if (!user) {

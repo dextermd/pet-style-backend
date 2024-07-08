@@ -5,11 +5,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import uploadToStorage from '../../utils/cloud_storage';
+import { Pet } from '../pets/entities/pet.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User) private usersRepository: Repository<User>,
+    @InjectRepository(Pet) private petsRepository: Repository<Pet>,
   ) {}
 
   async create(user: CreateUserDto) {
@@ -18,7 +20,7 @@ export class UsersService {
   }
 
   async findAll() {
-    return await this.usersRepository.find({ relations: ['roles'] });
+    return await this.usersRepository.find({ relations: ['roles', 'pets'] });
   }
 
   async findUserByEmail(email: string) {
@@ -34,7 +36,7 @@ export class UsersService {
       where: {
         email,
       },
-      relations: ['roles'],
+      relations: ['roles', 'pets'],
     });
   }
 
@@ -80,5 +82,39 @@ export class UsersService {
     user.image = url;
     const updateUser = Object.assign(userFound, user);
     return this.usersRepository.save(updateUser);
+  }
+
+  async getMe(userId: number) {
+    if (!userId) {
+      throw new HttpException('ID is undefined', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      const me = await this.usersRepository.findOne({
+        where: {
+          id: userId,
+        },
+        relations: ['roles', 'pets'],
+      });
+      delete me.password;
+      return me;
+    } catch (error) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+  }
+
+  async getMePets(userId: number) {
+    if (!userId) {
+      throw new HttpException('ID is undefined', HttpStatus.BAD_REQUEST);
+    }
+    try {
+      return await this.petsRepository.find({
+        where: {
+          userId: userId,
+        },
+      });
+    } catch (error) {
+      throw new HttpException('Pets not found', HttpStatus.NOT_FOUND);
+    }
   }
 }

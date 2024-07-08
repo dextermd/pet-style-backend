@@ -34,7 +34,7 @@ export class FilesController {
   @UseGuards(JwtAuthGuard, JwtRolesGuard)
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file) {
-    return this.filesService.handleFileUpload(file);
+    return await this.filesService.handleFileUpload(file);
   }
 
   @Get('/getFile') // http://localhost/api/files/getFile -> GET
