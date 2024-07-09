@@ -49,14 +49,22 @@ export class PetsController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor('file'))
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePetDto: UpdatePetDto) {
-    return this.petsService.update(+id, updatePetDto);
+  update(
+    @Param('id') id: string,
+    @Body() updatePetDto: UpdatePetDto,
+    @UploadedFile() file,
+    @Req() req,
+  ) {
+    const userId = req.user.userId;
+    return this.petsService.update(+id, updatePetDto, userId, file);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.petsService.remove(+id);
+  remove(@Param('id') id: string, @Req() req) {
+    const userId = req.user.userId;
+    return this.petsService.remove(+id, userId);
   }
 }

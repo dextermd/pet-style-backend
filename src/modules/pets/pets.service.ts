@@ -66,12 +66,50 @@ export class PetsService {
     return pet;
   }
 
-  update(id: number, updatePetDto: UpdatePetDto) {
-    return `This action updates a #${id} pet`;
+  async update(
+    id: number,
+    updatePetDto: UpdatePetDto,
+    userId: number,
+    file?: any,
+  ) {
+    const userFound = await this.userRepository.findOneBy({ id: userId });
+
+    if (!userFound)
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+
+    const pet = await this.petRepository.findOne({ where: { id, userId } });
+
+    if (!pet) throw new NotFoundException('Pet not found');
+
+    if (file) {
+      if (pet.photo) await this.filesService.deleteFile(pet.photo);
+
+      await this.filesService.handleFileUpload(file);
+      updatePetDto.photo = file.filename;
+    }
+
+    const updatedPet = Object.assign(pet, updatePetDto);
+
+    return this.petRepository.save(updatedPet);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} pet`;
+  async remove(id: number, userId: number) {
+    if (!userId)
+      throw new HttpException('User id not fount', HttpStatus.BAD_REQUEST);
+
+    const pet = await this.petRepository.findOne({ where: { id, userId } });
+
+    if (!pet) throw new NotFoundException('Pet not found');
+
+    const deleteFilePromise = pet.photo
+      ? this.filesService.deleteFile(pet.photo)
+      : Promise.resolve();
+
+    await this.petRepository.delete(pet.id);
+
+    await deleteFilePromise;
+
+    return { deletedPetId: pet.id };
   }
 
   async findAllByUserId(userId: number) {

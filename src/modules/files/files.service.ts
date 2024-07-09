@@ -58,4 +58,18 @@ export class FilesService {
     }
     return filePath;
   }
+
+  async deleteFile(photo: string) {
+    const filePath = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      this.uploadPath,
+      photo,
+    );
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+  }
 }

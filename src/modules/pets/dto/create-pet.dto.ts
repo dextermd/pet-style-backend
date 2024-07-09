@@ -1,13 +1,13 @@
 import { Type } from 'class-transformer';
 import {
-  IsDate, IsInt,
+  IsDate,
+  IsInt,
   IsNotEmpty,
-  IsNumber,
   IsString,
   Max,
   MaxLength,
-  Min
-} from "class-validator";
+  Min,
+} from 'class-validator';
 
 export class CreatePetDto {
   @IsNotEmpty()
