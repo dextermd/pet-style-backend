@@ -110,7 +110,7 @@ export class AuthService {
     const rolesString = user.roles.map((role) => role.name);
     const payload = { id: user.id, name: user.name, roles: rolesString };
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '1115m' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '60m' });
     const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
 
     let refreshTokenEntity: RefreshToken;

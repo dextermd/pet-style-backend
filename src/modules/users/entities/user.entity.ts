@@ -12,6 +12,7 @@ import {
 import { Role } from 'src/modules/roles/entities/role.entity';
 import { RefreshToken } from '../../refresh_token/entities/refresh_token.entity';
 import { Pet } from 'src/modules/pets/entities/pet.entity';
+import { Appointment } from '../../appointments/entities/appointment.entity';
 
 @Entity({ name: 'users' })
 export class User extends EntityBaseWithDate(EntityBase(BaseEntity)) {
@@ -53,6 +54,9 @@ export class User extends EntityBaseWithDate(EntityBase(BaseEntity)) {
 
   @OneToMany(() => Pet, (pet) => pet.user)
   pets: Pet[];
+
+  @OneToMany(() => Appointment, (appointment) => appointment.user)
+  appointments: Appointment[];
 
   @BeforeInsert()
   async hashPassword() {

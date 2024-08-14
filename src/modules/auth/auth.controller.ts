@@ -25,6 +25,7 @@ export class AuthController {
 
   @Post('refresh') // http://localhost/api/auth/refresh -> POST
   async refresh(@Body('refresh_token') refreshToken: string) {
+    console.log('Received refresh token:', refreshToken);
     if (!refreshToken) {
       throw new UnauthorizedException('Refresh token is required');
     }

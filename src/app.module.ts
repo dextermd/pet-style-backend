@@ -12,6 +12,9 @@ import { FilesModule } from './modules/files/files.module';
 
 import dbConfiguration from './db/config/db.config';
 import { AdminModule } from './admin.module';
+import { GroomersModule } from './modules/groomers/groomers.module';
+import { AppointmentExceptionsModule } from './modules/appointment_exceptions/appointment_exceptions.module';
+import { AppointmentsModule } from './modules/appointments/appointments.module';
 
 @Module({
   imports: [
@@ -32,6 +35,9 @@ import { AdminModule } from './admin.module';
     PetsModule,
     FilesModule,
     AdminModule,
+    GroomersModule,
+    AppointmentExceptionsModule,
+    AppointmentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
