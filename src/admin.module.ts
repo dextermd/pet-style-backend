@@ -7,6 +7,7 @@ import { JwtRole } from './modules/auth/jwt/jwt-role';
 import { Role } from './modules/roles/entities/role.entity';
 import { RefreshToken } from './modules/refresh_token/entities/refresh_token.entity';
 import { Pet } from './modules/pets/entities/pet.entity';
+import { Groomer } from './modules/groomers/entities/groomer.entity';
 
 const authenticate = async (
   email: string,
@@ -45,6 +46,9 @@ const authenticate = async (
           adminJsOptions: {
             rootPath: '/admin',
             resources: [
+              {
+                resource: Groomer,
+              },
               {
                 resource: User,
                 options: {
@@ -142,5 +146,6 @@ const authenticate = async (
       });
     })(),
   ],
+  controllers: [],
 })
 export class AdminModule {}
