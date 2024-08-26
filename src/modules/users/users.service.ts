@@ -117,4 +117,23 @@ export class UsersService {
       throw new HttpException('Pets not found', HttpStatus.NOT_FOUND);
     }
   }
+
+  async findUserById(id: any) {
+    if (!id) {
+      throw new HttpException('ID is undefined', HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      const user = await this.usersRepository.findOne({
+        where: {
+          id,
+        },
+        relations: ['roles', 'pets'],
+      });
+      delete user.password;
+      return user;
+    } catch (error) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+  }
 }

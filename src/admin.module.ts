@@ -8,6 +8,9 @@ import { Role } from './modules/roles/entities/role.entity';
 import { RefreshToken } from './modules/refresh_token/entities/refresh_token.entity';
 import { Pet } from './modules/pets/entities/pet.entity';
 import { Groomer } from './modules/groomers/entities/groomer.entity';
+import { OtpModule } from './modules/otp/otp.module';
+import { ChatModule } from './modules/chat/chat.module';
+import { MessagesModule } from './modules/messages/messages.module';
 
 const authenticate = async (
   email: string,
@@ -145,6 +148,9 @@ const authenticate = async (
         inject: [getRepositoryToken(User), getRepositoryToken(Role)],
       });
     })(),
+    OtpModule,
+    ChatModule,
+    MessagesModule,
   ],
   controllers: [],
 })

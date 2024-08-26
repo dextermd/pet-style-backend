@@ -9,6 +9,7 @@ import { JwtStrategy } from './jwt/jwt.strategy';
 import { Role } from '../roles/entities/role.entity';
 import { RolesService } from '../roles/roles.service';
 import { RefreshToken } from '../refresh_token/entities/refresh_token.entity';
+import { Reflector } from '@nestjs/core';
 
 @Module({
   imports: [
