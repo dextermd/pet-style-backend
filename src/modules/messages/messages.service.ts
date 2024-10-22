@@ -5,15 +5,32 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from './entities/message.entity';
 import { User } from '../users/entities/user.entity';
-import { MessageDto } from './dto/message.dto';
 
 @Injectable()
 export class MessagesService {
   constructor(
-    @InjectRepository(Message) private messagesRepository: Repository<Message>,
+    @InjectRepository(Message)
+    private messagesRepository: Repository<Message>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
   async create(createMessageDto: CreateMessageDto) {
-    return `This action adds a new message`;
+    const sender = await this.userRepository.findOne({
+      where: { id: createMessageDto.senderId },
+    });
+    console.log('Sender: ', sender);
+    const receiver = await this.userRepository.findOneBy({
+      id: createMessageDto.receiverId,
+    });
+    console.log('Receiver: ', receiver);
+    const message = this.messagesRepository.create({
+      text: createMessageDto.text,
+      sender,
+      receiver,
+      status: createMessageDto.status,
+    });
+
+    return await this.messagesRepository.save(message);
   }
 
   findAll() {
@@ -33,22 +50,7 @@ export class MessagesService {
   }
 
   async updateMessageStatus(messageId: string, status: number): Promise<void> {
-    await this.messagesRepository.update(messageId, { read: status });
-  }
-
-  async saveMessage(
-    sender: User,
-    receiver: User,
-    message: string,
-    delivery: number,
-  ) {
-    const msg = new Message();
-    msg.sender = sender;
-    msg.receiver = receiver;
-    msg.text = message;
-    msg.read = delivery;
-    await msg.save();
-    return msg;
+    await this.messagesRepository.update(messageId, { status: status });
   }
 
   async getMessagesBetweenUsers(senderId: string, receiverId: string) {
@@ -64,12 +66,14 @@ export class MessagesService {
       .getMany();
 
     return messages.map((message) => {
-      const messageDto = new MessageDto();
-      messageDto.from = message.sender.id.toString();
-      messageDto.to = message.receiver.id.toString();
-      messageDto.text = message.text;
-      messageDto.status = message.read;
-      return messageDto;
+      return {
+        id: message.id,
+        text: message.text,
+        senderId: message.sender.id,
+        receiverId: message.receiver.id,
+        status: message.status,
+        createdAt: message.createdAt,
+      };
     });
   }
 }

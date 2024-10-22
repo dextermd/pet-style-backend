@@ -10,4 +10,10 @@ export class OtpController {
   async sendSms(@Body('phone') phone: string) {
     return this.otpService.sendSms(phone);
   }
+
+  @Post('verify-sms')
+  @UseGuards(JwtAuthGuard)
+  async verifySms(@Body('phone') phone: string, @Body('code') code: string) {
+    return this.otpService.verifySms(phone, code);
+  }
 }

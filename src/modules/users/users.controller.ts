@@ -27,6 +27,27 @@ import { JwtRole } from '../auth/jwt/jwt-role';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
+  @UseGuards(JwtAuthGuard, JwtRolesGuard)
+  @Get('check-phone') // http://localhost/api/users/check-phone -> GET
+  async checkPhone(@Req() req: any) {
+    return await this.usersService.checkPhone(req.user.userId);
+  }
+
+  @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
+  @UseGuards(JwtAuthGuard, JwtRolesGuard)
+  @Post('update-phone') // http://localhost/api/users/update-phone -> PUT
+  async updatePhone(@Req() req: any, @Body('phone') phone: string) {
+    return await this.usersService.updatePhone(req.user.userId, phone);
+  }
+
+  @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
+  @UseGuards(JwtAuthGuard)
+  @Get('me') // http://localhost/api/users/me -> GET
+  async getMe(@Req() req: any) {
+    return await this.usersService.getMe(req.user.userId);
+  }
+
   @HasRoles(JwtRole.ADMIN)
   @UseGuards(JwtAuthGuard, JwtRolesGuard)
   @Get() // http://localhost/api/users -> GET
@@ -43,12 +64,26 @@ export class UsersController {
 
   @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
   @UseGuards(JwtAuthGuard, JwtRolesGuard)
+  @Get(':id') // http://localhost/api/users:id -> GET
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    return await this.usersService.findUserById(id);
+  }
+
+  @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
+  @UseGuards(JwtAuthGuard, JwtRolesGuard)
   @Put(':id') // http://localhost/api/users:id -> PUT
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() user: UpdateUserDto,
   ) {
     return await this.usersService.update(id, user);
+  }
+
+  @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
+  @UseGuards(JwtAuthGuard, JwtRolesGuard)
+  @Get('mePets') // http://localhost/api/users/mePets -> GET
+  async getMePets(@Req() req: any) {
+    return await this.usersService.getMePets(req.user.userId);
   }
 
   @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
@@ -69,17 +104,5 @@ export class UsersController {
     @Body() user: UpdateUserDto,
   ) {
     return await this.usersService.updateWithImage(file, id, user);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('me') // http://localhost/api/users/me -> GET
-  async getMe(@Req() req) {
-    return await this.usersService.getMe(req.user.userId);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('mePets') // http://localhost/api/users/mePets -> GET
-  async getMePets(@Req() req) {
-    return await this.usersService.getMePets(req.user.userId);
   }
 }

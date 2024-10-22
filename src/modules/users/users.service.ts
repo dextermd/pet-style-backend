@@ -84,7 +84,8 @@ export class UsersService {
     return this.usersRepository.save(updateUser);
   }
 
-  async getMe(userId: number) {
+  async getMe(userId: any) {
+    console.log('User ID: ', userId);
     if (!userId) {
       throw new HttpException('ID is undefined', HttpStatus.BAD_REQUEST);
     }
@@ -132,6 +133,39 @@ export class UsersService {
       });
       delete user.password;
       return user;
+    } catch (error) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+  }
+
+  async checkPhone(userId: any) {
+    if (!userId) {
+      throw new HttpException('ID is undefined', HttpStatus.BAD_REQUEST);
+    }
+    try {
+      const user = await this.usersRepository.findOne({
+        where: {
+          id: userId,
+        },
+      });
+      return user.phone;
+    } catch (error) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+  }
+
+  async updatePhone(userId: any, phone: string) {
+    if (!userId) {
+      throw new HttpException('ID is undefined', HttpStatus.BAD_REQUEST);
+    }
+    try {
+      const user = await this.usersRepository.findOne({
+        where: {
+          id: userId,
+        },
+      });
+      user.phone = phone;
+      return await this.usersRepository.save(user);
     } catch (error) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }

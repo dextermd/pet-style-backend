@@ -19,8 +19,9 @@ export class Message extends EntityBaseWithDate(EntityBase(BaseEntity)) {
   // 0 => not delivered
   // 1 => delivered
   // 2 => read
+  // 3 => failed
   @Column({ default: 0 })
-  read: number;
+  status: number;
 
   @Column({ default: true, name: 'is_active' })
   isActive: boolean;

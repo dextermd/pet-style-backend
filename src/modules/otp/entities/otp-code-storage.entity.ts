@@ -9,6 +9,6 @@ export class OtpCodeStorage extends EntityBaseWithDate(BaseEntity) {
   @Column({ length: 20, nullable: false })
   code: string;
 
-  @Column({ nullable: false })
+  @Column({ type: 'bigint', nullable: false })
   expiration_time: number;
 }

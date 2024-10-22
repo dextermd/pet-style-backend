@@ -12,11 +12,11 @@ export class Appointment extends EntityBaseWithDate(EntityBase(BaseEntity)) {
   @Column()
   appointment_date: Date;
 
-  @Column()
+  @Column({ default: 'home' })
   location: string;
 
-  @Column()
-  status: string;
+  @Column({ default: 0 })
+  status: number;
 
   @ManyToOne(() => User, (user) => user.appointments)
   user: User;

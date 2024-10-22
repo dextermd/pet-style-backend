@@ -11,6 +11,9 @@ import { Appointment } from './entities/appointment.entity';
 import { Groomer } from '../groomers/entities/groomer.entity';
 import { HwDayOfWeekAppointmentDto } from './dto/hw-day-of-week-appointment.dto';
 import { TimeSlotAppointmentDto } from './dto/time-slot-appointment.dto';
+import { Pet } from '../pets/entities/pet.entity';
+import { User } from '../users/entities/user.entity';
+import { startOfDay, endOfDay } from 'date-fns';
 
 @Injectable()
 export class AppointmentsService {
@@ -19,6 +22,10 @@ export class AppointmentsService {
     private appointmentRepository: Repository<Appointment>,
     @InjectRepository(Groomer)
     private groomerRepository: Repository<Groomer>,
+    @InjectRepository(Pet)
+    private petRepository: Repository<Pet>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async getAvailableTimeSlots(date: string, groomerId: number) {
@@ -66,7 +73,6 @@ export class AppointmentsService {
     for (let hour = startHour; hour < endHour; hour += groomerDurationTime) {
       const wholeHours = Math.floor(hour);
       const minutes = (hour % 1) * 60;
-      console.log(wholeHours, minutes);
       const timeString = `${wholeHours}:${minutes === 0 ? '00' : '30'}`;
       slots.push(timeString);
     }
@@ -112,8 +118,36 @@ export class AppointmentsService {
     return dayOfWeekSlotDto;
   }
 
-  create(createAppointmentDto: CreateAppointmentDto) {
-    return 'This action adds a new appointment';
+  async create(createAppointmentDto: CreateAppointmentDto) {
+    if (createAppointmentDto.userId == undefined) {
+      throw new BadRequestException('Пользователь не найден');
+    }
+
+    if (createAppointmentDto.petId == undefined) {
+      throw new BadRequestException('Питомец не найден');
+    }
+
+    if (createAppointmentDto.groomerId == undefined) {
+      throw new BadRequestException('Грумер не найден');
+    }
+
+    const newAppointment = this.appointmentRepository.create({
+      appointment_date: createAppointmentDto.appointment_date,
+      location: createAppointmentDto.location,
+      status: createAppointmentDto.status,
+      user: { id: createAppointmentDto.userId },
+      pet: { id: createAppointmentDto.petId },
+      groomer: { id: createAppointmentDto.groomerId },
+    });
+
+    try {
+      return await this.appointmentRepository.save(newAppointment);
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new BadRequestException('Питомец уже записан на этот день');
+      }
+      throw error;
+    }
   }
 
   findAll() {
@@ -130,5 +164,15 @@ export class AppointmentsService {
 
   remove(id: number) {
     return `This action removes a #${id} appointment`;
+  }
+
+  async isAppointmentExistByDateAndPetId(date: Date, petId: number) {
+    const appointment = await this.appointmentRepository.findOne({
+      where: {
+        appointment_date: Between(startOfDay(date), endOfDay(date)),
+        pet: { id: petId },
+      },
+    });
+    return appointment;
   }
 }

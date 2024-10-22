@@ -26,12 +26,11 @@ export class WsJwtGuard implements CanActivate {
       if (decoded) {
         const user: User = decoded as User;
         client.handshake.query.userId = user.id;
-        console.log('User ID Ver: ', user.id);
         return true;
       }
     } catch (e) {
-      console.error('Token verification error:', e.message);
       client.emit('token_expired');
+      console.error('Error during token verification:', e.message);
       throw new BadRequestException('Invalid token');
     }
   }

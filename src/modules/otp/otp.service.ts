@@ -34,10 +34,7 @@ export class OtpService {
       return 'Phone number is not valid';
     }
 
-    let code = OtpService.getRandomNumber();
-    if (formattedPhone === '68751173') {
-      code = 111111;
-    }
+    const code = OtpService.getRandomNumber();
 
     const message = `Codul de verificare este: ${code}`;
 
@@ -73,17 +70,19 @@ export class OtpService {
 
     try {
       const response = await axios.get(this.smsMdUrl, config);
-      if (response.status === 201) {
+      console.log('SMS response data: ', response.data);
+
+      if (response.status === 200) {
         console.log('Sending sms to phone:', phone, 'with code:', code);
-        const otpCodeLog = this.otpLogRepository.create({
-          phone,
+        const otpCodeLog: OtpCodeLog = this.otpLogRepository.create({
+          phone: phone,
           code: code.toString(),
-          io_code: response.data.code,
-          operation: 'SEND SMS',
-          message_id: response.data.message,
+          io_code: response.data.message,
+          operation: 'CODE',
+          message_id: 'SEND SMS',
         });
 
-        await this.otpLogRepository.save(otpCodeLog);
+        await this.saveOtpCodeLog(otpCodeLog);
         await this.saveOtpCodeStorage(phone, code);
 
         console.log(
@@ -152,7 +151,11 @@ export class OtpService {
   }
 
   async saveOtpCodeLog(otpCodeLog: OtpCodeLog) {
-    return this.otpLogRepository.save(otpCodeLog);
+    try {
+      await this.otpLogRepository.save(otpCodeLog);
+    } catch (error) {
+      console.log('Error saving otp code log: ', error);
+    }
   }
 
   async saveOtpCodeStorage(phone: string, code: number) {
@@ -163,6 +166,51 @@ export class OtpService {
       code: code.toString(),
       expiration_time: expirationTime,
     });
-    await this.otpCodeStorageRepository.save(smsCodeStorage);
+
+    try {
+      await this.otpCodeStorageRepository.save(smsCodeStorage);
+    } catch (error) {
+      console.log('Error saving otp code storage: ', error);
+    }
+  }
+
+  async verifySms(phone: string, code: string) {
+    console.log('Phone: ', phone, 'Code: ', code);
+    if (phone === undefined || code === undefined) {
+      throw new HttpException(
+        'Phone or code is not valid',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const otpCodeStorage = await this.otpCodeStorageRepository.findOne({
+      where: { phone },
+    });
+
+    if (otpCodeStorage) {
+      if (otpCodeStorage.phone === phone && otpCodeStorage.code === code) {
+        const otpCodeLog: OtpCodeLog = this.otpLogRepository.create({
+          phone: phone,
+          code: code,
+          io_code: 'OK',
+          operation: 'VERIFY CODE',
+          message_id: 'VERIFY SMS',
+        });
+
+        await this.saveOtpCodeLog(otpCodeLog);
+
+        if (Date.now() <= otpCodeStorage.expiration_time) {
+          await this.otpCodeStorageRepository.delete({
+            phone: otpCodeStorage.phone,
+          });
+          throw new HttpException('Code is valid', HttpStatus.OK);
+        } else {
+          await this.otpCodeStorageRepository.delete({
+            phone: otpCodeStorage.phone,
+          });
+          throw new HttpException('Code is expired', HttpStatus.BAD_REQUEST);
+        }
+      }
+    }
+    throw new HttpException('Code is not valid', HttpStatus.NOT_FOUND);
   }
 }

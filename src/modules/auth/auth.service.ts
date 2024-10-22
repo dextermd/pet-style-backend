@@ -3,6 +3,7 @@ import {
   HttpStatus,
   Injectable,
   Logger,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { User } from '../users/entities/user.entity';
@@ -80,12 +81,12 @@ export class AuthService {
     });
 
     if (!tokenEntity) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new NotFoundException('Refresh token not found');
     }
 
     if (tokenEntity.expiresAt < new Date()) {
       await this.refreshTokenRepository.delete({ token: oldRefreshToken });
-      throw new UnauthorizedException('Refresh token expired');
+      throw new HttpException('Refresh token expired', HttpStatus.CONFLICT);
     }
 
     const userFound = await this.authRepository.findOne({
@@ -108,10 +109,14 @@ export class AuthService {
     oldTokenEntity?: RefreshToken,
   ) {
     const rolesString = user.roles.map((role) => role.name);
-    const payload = { id: user.id, name: user.name, roles: rolesString };
+    const payload = {
+      id: user.id,
+      name: user.name,
+      roles: rolesString,
+    };
 
-    const accessToken = this.jwtService.sign(payload, { expiresIn: '60m' });
-    const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '3600s' });
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: '6d' });
 
     let refreshTokenEntity: RefreshToken;
 
@@ -129,14 +134,11 @@ export class AuthService {
 
     await this.refreshTokenRepository.save(refreshTokenEntity);
 
-    const data = {
-      user: user,
+    return {
+      user: { ...user, password: undefined },
       accessToken: 'Bearer ' + accessToken,
       refreshToken: 'Bearer ' + refreshToken,
     };
-
-    delete data.user.password;
-    return data;
   }
 
   async validateOAuthLogin(payload: any): Promise<any> {

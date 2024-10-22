@@ -5,16 +5,29 @@ import {
   Body,
   Patch,
   Param,
-  Delete, UseGuards
-} from "@nestjs/common";
+  Delete,
+  UseGuards,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
-import { JwtAuthGuard } from "../auth/jwt/jwt-auth.guard";
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 
 @Controller('appointments')
 export class AppointmentsController {
   constructor(private readonly appointmentsService: AppointmentsService) {}
+
+  @UseGuards(JwtAuthGuard)
+  @Get('check-appointment-by-date-and-pet-id')
+  async isAppointmentExistByDateAndPetId(
+    @Body() data: { date: Date; petId: number },
+  ) {
+    return this.appointmentsService.isAppointmentExistByDateAndPetId(
+      data.date,
+      data.petId,
+    );
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -62,5 +75,11 @@ export class AppointmentsController {
   @Get('available-days-of-week/:groomerId')
   getAvailableDaysOfWeek(@Param('groomerId') groomerId: number) {
     return this.appointmentsService.getAvailableDaysOfWeekSlots(groomerId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('create-appointment')
+  async createAppointment(@Body() createAppointmentDto: CreateAppointmentDto) {
+    return this.appointmentsService.create(createAppointmentDto);
   }
 }

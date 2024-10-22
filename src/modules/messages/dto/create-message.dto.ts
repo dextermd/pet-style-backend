@@ -1,6 +1,8 @@
 export class CreateMessageDto {
-  from: string;
-  to: string;
+  id?: number;
+  senderId: number;
+  receiverId: number;
   text: string;
   status?: number;
+  createdAt?: Date;
 }
