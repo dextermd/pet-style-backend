@@ -175,4 +175,14 @@ export class AppointmentsService {
     });
     return appointment;
   }
+
+  getActiveAppointmentsByUser(userId: any) {
+    return this.appointmentRepository.find({
+      where: {
+        user: { id: userId },
+        status: 0,
+      },
+      relations: ['user', 'pet', 'groomer'],
+    });
+  }
 }

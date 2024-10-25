@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
-  ParseIntPipe,
+  Req,
 } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
@@ -26,6 +26,21 @@ export class AppointmentsController {
     return this.appointmentsService.isAppointmentExistByDateAndPetId(
       data.date,
       data.petId,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  //appointments-by-user
+  @Get('appointments-by-user')
+  async getAppointmentsByUser(@Req() req: any) {
+    //return this.appointmentsService.getAppointmentsByUser(req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('active-appointments-by-user')
+  async getActiveAppointmentsByUser(@Req() req: any) {
+    return this.appointmentsService.getActiveAppointmentsByUser(
+      req.user.userId,
     );
   }
 
