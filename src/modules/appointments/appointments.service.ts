@@ -13,7 +13,7 @@ import { HwDayOfWeekAppointmentDto } from './dto/hw-day-of-week-appointment.dto'
 import { TimeSlotAppointmentDto } from './dto/time-slot-appointment.dto';
 import { Pet } from '../pets/entities/pet.entity';
 import { User } from '../users/entities/user.entity';
-import { startOfDay, endOfDay } from 'date-fns';
+import { endOfDay, startOfDay } from 'date-fns';
 
 @Injectable()
 export class AppointmentsService {
@@ -119,15 +119,15 @@ export class AppointmentsService {
   }
 
   async create(createAppointmentDto: CreateAppointmentDto) {
-    if (createAppointmentDto.userId == undefined) {
+    if (createAppointmentDto.user.id == undefined) {
       throw new BadRequestException('Пользователь не найден');
     }
 
-    if (createAppointmentDto.petId == undefined) {
+    if (createAppointmentDto.pet.id == undefined) {
       throw new BadRequestException('Питомец не найден');
     }
 
-    if (createAppointmentDto.groomerId == undefined) {
+    if (createAppointmentDto.groomer.id == undefined) {
       throw new BadRequestException('Грумер не найден');
     }
 
@@ -135,9 +135,9 @@ export class AppointmentsService {
       appointment_date: createAppointmentDto.appointment_date,
       location: createAppointmentDto.location,
       status: createAppointmentDto.status,
-      user: { id: createAppointmentDto.userId },
-      pet: { id: createAppointmentDto.petId },
-      groomer: { id: createAppointmentDto.groomerId },
+      user: { id: createAppointmentDto.user.id },
+      pet: { id: createAppointmentDto.pet.id },
+      groomer: { id: createAppointmentDto.groomer.id },
     });
 
     try {
@@ -167,17 +167,16 @@ export class AppointmentsService {
   }
 
   async isAppointmentExistByDateAndPetId(date: Date, petId: number) {
-    const appointment = await this.appointmentRepository.findOne({
+    return await this.appointmentRepository.findOne({
       where: {
         appointment_date: Between(startOfDay(date), endOfDay(date)),
         pet: { id: petId },
       },
     });
-    return appointment;
   }
 
-  getActiveAppointmentsByUser(userId: any) {
-    return this.appointmentRepository.find({
+  async getActiveAppointmentsByUser(userId: any) {
+    return await this.appointmentRepository.find({
       where: {
         user: { id: userId },
         status: 0,
