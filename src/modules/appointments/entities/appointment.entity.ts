@@ -12,7 +12,7 @@ export class Appointment extends EntityBaseWithDate(EntityBase(BaseEntity)) {
   @Column()
   appointment_date: Date;
 
-  @Column({ default: 'home' })
+  @Column({ default: 'Home' })
   location: string;
 
   @Column({ default: 0 })

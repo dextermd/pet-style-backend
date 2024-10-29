@@ -33,7 +33,7 @@ export class AppointmentsController {
   //appointments-by-user
   @Get('appointments-by-user')
   async getAppointmentsByUser(@Req() req: any) {
-    //return this.appointmentsService.getAppointmentsByUser(req.user.userId);
+    return this.appointmentsService.getAppointmentsByUser(req.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)

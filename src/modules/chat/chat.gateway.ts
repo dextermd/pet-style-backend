@@ -38,7 +38,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
     const userId = client.handshake.query.userId;
-    console.log('User ID: ', userId);
     client.join(userId);
   }
 

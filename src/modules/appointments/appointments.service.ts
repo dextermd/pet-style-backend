@@ -184,4 +184,13 @@ export class AppointmentsService {
       relations: ['user', 'pet', 'groomer'],
     });
   }
+
+  async getAppointmentsByUser(userId) {
+    return await this.appointmentRepository.find({
+      where: {
+        user: { id: userId },
+      },
+      relations: ['user', 'pet', 'groomer'],
+    });
+  }
 }

@@ -85,7 +85,6 @@ export class UsersService {
   }
 
   async getMe(userId: any) {
-    console.log('User ID: ', userId);
     if (!userId) {
       throw new HttpException('ID is undefined', HttpStatus.BAD_REQUEST);
     }
