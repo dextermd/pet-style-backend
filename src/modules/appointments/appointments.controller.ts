@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   Req,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { AppointmentsService } from './appointments.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
@@ -30,7 +31,6 @@ export class AppointmentsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  //appointments-by-user
   @Get('appointments-by-user')
   async getAppointmentsByUser(@Req() req: any) {
     return this.appointmentsService.getAppointmentsByUser(req.user.userId);
@@ -78,6 +78,27 @@ export class AppointmentsController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Patch('cancel-appointment/:id')
+  async cancelAppointment(
+    @Req() req: any,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.appointmentsService.cancelAppointment(id, req.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('is-available-edit-appointment/:id')
+  async isAvailableEditAppointment(
+    @Req() req: any,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.appointmentsService.isAvailableEditAppointment(
+      id,
+      req.user.userId,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('available-slots/:date/:groomerId')
   getAvailableTimeSlots(
     @Param('date') date: string,
@@ -90,11 +111,5 @@ export class AppointmentsController {
   @Get('available-days-of-week/:groomerId')
   getAvailableDaysOfWeek(@Param('groomerId') groomerId: number) {
     return this.appointmentsService.getAvailableDaysOfWeekSlots(groomerId);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('create-appointment')
-  async createAppointment(@Body() createAppointmentDto: CreateAppointmentDto) {
-    return this.appointmentsService.create(createAppointmentDto);
   }
 }

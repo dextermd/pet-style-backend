@@ -158,8 +158,27 @@ export class AppointmentsService {
     return `This action returns a #${id} appointment`;
   }
 
-  update(id: number, updateAppointmentDto: UpdateAppointmentDto) {
-    return `This action updates a #${id} appointment`;
+  async update(id: number, updateAppointmentDto: UpdateAppointmentDto) {
+    const appointment = await this.appointmentRepository.findOne({
+      where: { id: id },
+    });
+
+    if (!appointment) {
+      throw new NotFoundException('Запись не найдена');
+    }
+
+    const pet = await this.petRepository.findOne({
+      where: { id: updateAppointmentDto.pet.id },
+    });
+
+    if (!pet) {
+      throw new NotFoundException('Питомец не найден');
+    }
+
+    appointment.appointment_date = updateAppointmentDto.appointment_date;
+    appointment.pet = pet;
+
+    return await this.appointmentRepository.save(appointment);
   }
 
   remove(id: number) {
@@ -171,6 +190,7 @@ export class AppointmentsService {
       where: {
         appointment_date: Between(startOfDay(date), endOfDay(date)),
         pet: { id: petId },
+        status: 0,
       },
     });
   }
@@ -192,5 +212,57 @@ export class AppointmentsService {
       },
       relations: ['user', 'pet', 'groomer'],
     });
+  }
+
+  async cancelAppointment(id: number, userId: number) {
+    const appointment = await this.getAppointmentIdAndUserId(id, userId);
+
+    if (!appointment) {
+      throw new NotFoundException('Запись не найдена');
+    }
+
+    const diffHours = this.getDiffHours(appointment.appointment_date);
+
+    if (diffHours < 48) {
+      throw new BadRequestException(
+        'Отмена записи возможна не позднее чем за 48 часов до начала\n' +
+          'приема. Для отмены записи свяжитесь с грумером',
+      );
+    }
+
+    appointment.status = 2;
+    await this.appointmentRepository.save(appointment);
+  }
+
+  async isAvailableEditAppointment(id: number, userId: number) {
+    const appointment = await this.getAppointmentIdAndUserId(id, userId);
+
+    if (!appointment) {
+      throw new NotFoundException('Запись не найдена');
+    }
+
+    const diffHours = this.getDiffHours(appointment.appointment_date);
+
+    if (diffHours < 48) {
+      return null;
+    }
+
+    return appointment;
+  }
+
+  async getAppointmentIdAndUserId(id: number, userId: number) {
+    return await this.appointmentRepository.findOne({
+      where: {
+        id,
+        user: { id: userId },
+      },
+      relations: ['user', 'pet', 'groomer'],
+    });
+  }
+
+  getDiffHours(dateAppointment: Date) {
+    const dateNow = new Date();
+    const diffTime = dateAppointment.getTime() - dateNow.getTime();
+    return diffTime / (1000 * 3600);
   }
 }
