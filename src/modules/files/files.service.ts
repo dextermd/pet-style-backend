@@ -38,6 +38,7 @@ export class FilesService {
   }
 
   async handleFileUpload(file: Express.Multer.File) {
+    console.log(file.filename);
     if (!file) {
       throw new NotFoundException('No file uploaded');
     }

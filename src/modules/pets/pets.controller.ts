@@ -54,17 +54,15 @@ export class PetsController {
   update(
     @Param('id') id: string,
     @Body() updatePetDto: UpdatePetDto,
-    @UploadedFile() file,
-    @Req() req,
+    @UploadedFile() file: any,
+    @Req() req: any,
   ) {
-    const userId = req.user.userId;
-    return this.petsService.update(+id, updatePetDto, userId, file);
+    return this.petsService.update(+id, updatePetDto, req.user.userId, file);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string, @Req() req) {
-    const userId = req.user.userId;
-    return this.petsService.remove(+id, userId);
+  remove(@Param('id') id: string, @Req() req: any) {
+    return this.petsService.remove(+id, req.user.userId);
   }
 }

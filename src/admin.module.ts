@@ -11,6 +11,8 @@ import { Groomer } from './modules/groomers/entities/groomer.entity';
 import { OtpModule } from './modules/otp/otp.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { MessagesModule } from './modules/messages/messages.module';
+import { DevicesModule } from './modules/devices/devices.module';
+import { FirebaseModule } from './modules/firebase/firebase.module';
 
 const authenticate = async (
   email: string,
@@ -151,6 +153,8 @@ const authenticate = async (
     OtpModule,
     ChatModule,
     MessagesModule,
+    DevicesModule,
+    FirebaseModule,
   ],
   controllers: [],
 })

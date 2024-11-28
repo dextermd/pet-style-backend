@@ -3,6 +3,7 @@ import { hash } from 'bcrypt';
 import {
   BaseEntity,
   BeforeInsert,
+  BeforeUpdate,
   Column,
   Entity,
   JoinTable,
@@ -74,6 +75,13 @@ export class User extends EntityBaseWithDate(EntityBase(BaseEntity)) {
 
   @BeforeInsert()
   async hashPassword() {
+    if (this.password) {
+      this.password = await hash(this.password, Number(process.env.HASH_SALT));
+    }
+  }
+
+  @BeforeUpdate()
+  async hashPasswordOnUpdate() {
     if (this.password) {
       this.password = await hash(this.password, Number(process.env.HASH_SALT));
     }

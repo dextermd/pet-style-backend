@@ -6,14 +6,14 @@ import {
   MaxFileSizeValidator,
   Param,
   ParseFilePipe,
-  ParseIntPipe,
+  ParseIntPipe, Patch,
   Post,
   Put,
   Req,
   UploadedFile,
   UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+  UseInterceptors
+} from "@nestjs/common";
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
@@ -29,54 +29,54 @@ export class UsersController {
 
   @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
   @UseGuards(JwtAuthGuard, JwtRolesGuard)
-  @Get('check-phone') // http://localhost/api/users/check-phone -> GET
+  @Get('check-phone')
   async checkPhone(@Req() req: any) {
     return await this.usersService.checkPhone(req.user.userId);
   }
 
   @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
   @UseGuards(JwtAuthGuard, JwtRolesGuard)
-  @Post('update-phone') // http://localhost/api/users/update-phone -> PUT
+  @Post('update-phone')
   async updatePhone(@Req() req: any, @Body('phone') phone: string) {
     return await this.usersService.updatePhone(req.user.userId, phone);
   }
 
   @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
+  @UseGuards(JwtAuthGuard, JwtRolesGuard)
+  @UseInterceptors(FileInterceptor('file'))
+  @Post('update-image')
+  async updateImage(@Req() req: any, @UploadedFile() file: any) {
+    console.log('file');
+    console.log(file.filename);
+    return await this.usersService.updateImage(req.user.userId, file);
+  }
+
+  @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
   @UseGuards(JwtAuthGuard)
-  @Get('me') // http://localhost/api/users/me -> GET
+  @Get('me')
   async getMe(@Req() req: any) {
     return await this.usersService.getMe(req.user.userId);
   }
 
   @HasRoles(JwtRole.ADMIN)
   @UseGuards(JwtAuthGuard, JwtRolesGuard)
-  @Get() // http://localhost/api/users -> GET
+  @Get()
   async findAll() {
     return await this.usersService.findAll();
   }
 
   @HasRoles(JwtRole.ADMIN)
   @UseGuards(JwtAuthGuard, JwtRolesGuard)
-  @Post() // http://localhost/api/users -> POST
+  @Post()
   async create(@Body() user: CreateUserDto) {
     return await this.usersService.create(user);
   }
 
   @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
   @UseGuards(JwtAuthGuard, JwtRolesGuard)
-  @Get(':id') // http://localhost/api/users:id -> GET
+  @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     return await this.usersService.findUserById(id);
-  }
-
-  @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
-  @UseGuards(JwtAuthGuard, JwtRolesGuard)
-  @Put(':id') // http://localhost/api/users:id -> PUT
-  async update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() user: UpdateUserDto,
-  ) {
-    return await this.usersService.update(id, user);
   }
 
   @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
@@ -104,5 +104,19 @@ export class UsersController {
     @Body() user: UpdateUserDto,
   ) {
     return await this.usersService.updateWithImage(file, id, user);
+  }
+
+  @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
+  @UseGuards(JwtAuthGuard, JwtRolesGuard)
+  @Put()
+  async update(
+    @Req() req: any,
+    @Body() body: { user: UpdateUserDto; newPassword: string },
+  ) {
+    return await this.usersService.update(
+      req.user.userId,
+      body.user,
+      body.newPassword,
+    );
   }
 }

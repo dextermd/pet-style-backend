@@ -47,4 +47,7 @@ export class Groomer extends EntityBaseWithDate(EntityBase(BaseEntity)) {
     (appointmentException) => appointmentException.groomer,
   )
   appointment_exceptions: AppointmentException[];
+
+  @Column({ nullable: true })
+  fcmToken: string;
 }

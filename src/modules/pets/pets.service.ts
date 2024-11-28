@@ -72,25 +72,22 @@ export class PetsService {
     userId: number,
     file?: any,
   ) {
-    const userFound = await this.userRepository.findOneBy({ id: userId });
+    try {
+      const pet = await this.petRepository.findOne({ where: { id, userId } });
 
-    if (!userFound)
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      if (file) {
+        if (pet.photo) await this.filesService.deleteFile(pet.photo);
 
-    const pet = await this.petRepository.findOne({ where: { id, userId } });
+        await this.filesService.handleFileUpload(file);
+        updatePetDto.photo = file.filename;
+      }
 
-    if (!pet) throw new NotFoundException('Pet not found');
+      const updatedPet = Object.assign(pet, updatePetDto);
 
-    if (file) {
-      if (pet.photo) await this.filesService.deleteFile(pet.photo);
-
-      await this.filesService.handleFileUpload(file);
-      updatePetDto.photo = file.filename;
+      return this.petRepository.save(updatedPet);
+    } catch (error) {
+      throw new HttpException('Pet not found', HttpStatus.NOT_FOUND);
     }
-
-    const updatedPet = Object.assign(pet, updatePetDto);
-
-    return this.petRepository.save(updatedPet);
   }
 
   async remove(id: number, userId: number) {

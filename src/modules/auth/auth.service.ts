@@ -47,6 +47,7 @@ export class AuthService {
 
     const newUser = this.authRepository.create(user);
     newUser.roles = await this.rolesRepository.findBy({ id: In([2]) });
+    newUser.provider = 'email';
 
     const userSaved = await this.authRepository.save(newUser);
     return this._generateTokensAndReturnUserData(userSaved);
@@ -141,7 +142,7 @@ export class AuthService {
     };
   }
 
-  async validateOAuthLogin(payload: any): Promise<any> {
+  async validateOAuthLogin(payload: any, provider: string): Promise<any> {
     const email = payload.email;
     const name = payload.name;
     const image = payload.picture;
@@ -157,6 +158,7 @@ export class AuthService {
         name,
         image,
         roles: await this.rolesRepository.findBy({ id: In([2]) }),
+        provider,
       });
       user = await this.authRepository.save(user);
     }
@@ -214,7 +216,10 @@ export class AuthService {
   }
 
   private getPublicKey(key): string {
-    const pubKey = `-----BEGIN PUBLIC KEY-----\n${key.n}\n-----END PUBLIC KEY-----`;
-    return pubKey;
+    return `-----BEGIN PUBLIC KEY-----\n${key.n}\n-----END PUBLIC KEY-----`;
+  }
+
+  async logout(userId: any) {
+    await this.refreshTokenRepository.delete({ user: userId });
   }
 }
