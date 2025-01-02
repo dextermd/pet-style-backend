@@ -6,14 +6,14 @@ import {
   MaxFileSizeValidator,
   Param,
   ParseFilePipe,
-  ParseIntPipe, Patch,
+  ParseIntPipe,
   Post,
   Put,
   Req,
   UploadedFile,
   UseGuards,
-  UseInterceptors
-} from "@nestjs/common";
+  UseInterceptors,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
@@ -46,8 +46,6 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('file'))
   @Post('update-image')
   async updateImage(@Req() req: any, @UploadedFile() file: any) {
-    console.log('file');
-    console.log(file.filename);
     return await this.usersService.updateImage(req.user.userId, file);
   }
 
@@ -60,7 +58,7 @@ export class UsersController {
 
   @HasRoles(JwtRole.ADMIN)
   @UseGuards(JwtAuthGuard, JwtRolesGuard)
-  @Get()
+  @Get('')
   async findAll() {
     return await this.usersService.findAll();
   }

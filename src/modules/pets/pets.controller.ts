@@ -16,6 +16,9 @@ import { CreatePetDto } from './dto/create-pet.dto';
 import { UpdatePetDto } from './dto/update-pet.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { HasRoles } from '../auth/jwt/has-roles';
+import { JwtRole } from '../auth/jwt/jwt-role';
+import { JwtRolesGuard } from '../auth/jwt/jwt-roles.guard';
 
 @Controller('pets')
 export class PetsController {
@@ -36,7 +39,8 @@ export class PetsController {
     return this.petsService.findAllByUserId(userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @HasRoles(JwtRole.ADMIN)
+  @UseGuards(JwtAuthGuard, JwtRolesGuard)
   @Get() // http://localhost/api/pets -> GET
   findAll() {
     return this.petsService.findAll();

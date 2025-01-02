@@ -55,7 +55,7 @@ export class PetsService {
   }
 
   findAll() {
-    return `This action returns all pets`;
+    return this.petRepository.find({ relations: ['user'] });
   }
 
   async findOne(id: number) {
