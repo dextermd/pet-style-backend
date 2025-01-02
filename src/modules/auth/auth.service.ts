@@ -222,4 +222,36 @@ export class AuthService {
   async logout(userId: any) {
     await this.refreshTokenRepository.delete({ user: userId });
   }
+
+  async groomerLogin(loginData: LoginAuthDto) {
+    const userFound = await this.authRepository.findOne({
+      where: { email: loginData.email },
+      relations: ['roles'],
+    });
+
+    if (!userFound) {
+      throw new HttpException(
+        'Пользователь с таким email не найден',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    if (!userFound.roles.find((role) => role.name === 'Administrator')) {
+      throw new HttpException(
+        'Пользователь не является администратором',
+        HttpStatus.FORBIDDEN,
+      );
+    }
+
+    const isPasswordValid = await compare(
+      loginData.password,
+      userFound.password,
+    );
+
+    if (!isPasswordValid) {
+      throw new HttpException('Incorrect password', HttpStatus.FORBIDDEN);
+    }
+
+    return this._generateTokensAndReturnUserData(userFound);
+  }
 }

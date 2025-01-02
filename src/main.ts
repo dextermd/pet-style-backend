@@ -10,8 +10,15 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('api');
 
-  await app.listen(3000, `${process.env.BASE_HOST}` || 'localhost');
+  app.enableCors({
+    origin: 'http://localhost:4200',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
+
+  await app.listen(3000);
 }
 bootstrap().then(() =>
-  console.log('Server is running on http://localhost:3000'),
+  console.log('Server is running on ' + `localhost` + ':3000'),
 );

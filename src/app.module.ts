@@ -15,7 +15,6 @@ import { AdminModule } from './admin.module';
 import { GroomersModule } from './modules/groomers/groomers.module';
 import { AppointmentExceptionsModule } from './modules/appointment_exceptions/appointment_exceptions.module';
 import { AppointmentsModule } from './modules/appointments/appointments.module';
-import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -39,7 +38,6 @@ import { ChatModule } from './modules/chat/chat.module';
     GroomersModule,
     AppointmentExceptionsModule,
     AppointmentsModule,
-    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -27,6 +27,11 @@ export class AuthController {
     return await this.authService.login(loginData);
   }
 
+  @Post('groomer-login')
+  async groomerLogin(@Body() loginData: LoginAuthDto) {
+    return await this.authService.groomerLogin(loginData);
+  }
+
   @Post('refresh')
   async refresh(@Body('refresh_token') refreshToken: string) {
     if (!refreshToken) {

@@ -9,10 +9,13 @@ import { RefreshToken } from './modules/refresh_token/entities/refresh_token.ent
 import { Pet } from './modules/pets/entities/pet.entity';
 import { Groomer } from './modules/groomers/entities/groomer.entity';
 import { OtpModule } from './modules/otp/otp.module';
-import { ChatModule } from './modules/chat/chat.module';
-import { MessagesModule } from './modules/messages/messages.module';
 import { DevicesModule } from './modules/devices/devices.module';
 import { FirebaseModule } from './modules/firebase/firebase.module';
+import { PromotionModule } from './modules/promotion/promotion.module';
+import { FaqModule } from './modules/faq/faq.module';
+import { ServiceModule } from './modules/service/service.module';
+import { AppointmentsModule } from './modules/appointments/appointments.module';
+import { Appointment } from "./modules/appointments/entities/appointment.entity";
 
 const authenticate = async (
   email: string,
@@ -108,6 +111,16 @@ const authenticate = async (
                 },
               },
               {
+                resource: Appointment,
+                options: {
+                  properties: {
+                    user: {
+                      reference: 'User',
+                    },
+                  },
+                },
+              },
+              {
                 resource: Pet,
                 options: {
                   properties: {
@@ -151,10 +164,12 @@ const authenticate = async (
       });
     })(),
     OtpModule,
-    ChatModule,
-    MessagesModule,
     DevicesModule,
     FirebaseModule,
+    PromotionModule,
+    FaqModule,
+    ServiceModule,
+    AppointmentsModule,
   ],
   controllers: [],
 })
