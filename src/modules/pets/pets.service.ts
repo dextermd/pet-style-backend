@@ -76,7 +76,7 @@ export class PetsService {
       const pet = await this.petRepository.findOne({ where: { id, userId } });
 
       if (file) {
-        if (pet.photo) await this.filesService.deleteFile(pet.photo);
+        if (pet.photo) await this.filesService.deleteFile(pet.photo, 'pets');
 
         await this.filesService.handleFileUpload(file);
         updatePetDto.photo = file.filename;
@@ -99,7 +99,7 @@ export class PetsService {
     if (!pet) throw new NotFoundException('Pet not found');
 
     const deleteFilePromise = pet.photo
-      ? this.filesService.deleteFile(pet.photo)
+      ? this.filesService.deleteFile(pet.photo, 'pets')
       : Promise.resolve();
 
     await this.petRepository.delete(pet.id);

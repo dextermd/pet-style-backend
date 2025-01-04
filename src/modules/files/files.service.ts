@@ -13,10 +13,14 @@ export class FilesService {
   private readonly uploadPath = './uploads';
   private readonly maxFileSize = 5 * 1024 * 1024;
 
-  getMulterOptions(): MulterModuleOptions {
+  getMulterOptions({
+    folderName,
+  }: {
+    folderName: string;
+  }): MulterModuleOptions {
     return {
       storage: diskStorage({
-        destination: './uploads',
+        destination: './uploads/' + folderName,
         filename: (req, file, cb) => {
           const timestamp = new Date().toISOString().replace(/[-:.TZ]/g, '');
           const ext = file.originalname.split('.').pop();
@@ -60,13 +64,13 @@ export class FilesService {
     return filePath;
   }
 
-  async deleteFile(photo: string) {
+  async deleteFile(photo: string, folderName: string) {
     const filePath = path.join(
       __dirname,
       '..',
       '..',
       '..',
-      this.uploadPath,
+      this.uploadPath + '/' + folderName,
       photo,
     );
     if (fs.existsSync(filePath)) {

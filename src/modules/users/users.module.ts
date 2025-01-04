@@ -19,7 +19,7 @@ import { FilesModule } from '../files/files.module';
     MulterModule.registerAsync({
       imports: [forwardRef(() => FilesModule)],
       useFactory: (filesService: FilesService) =>
-        filesService.getMulterOptions(),
+        filesService.getMulterOptions({ folderName: 'users' }),
       inject: [FilesService],
     }),
   ],

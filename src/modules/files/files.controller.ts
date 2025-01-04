@@ -33,12 +33,12 @@ export class FilesController {
   @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
   @UseGuards(JwtAuthGuard, JwtRolesGuard)
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file) {
+  async uploadFile(@UploadedFile() file: any) {
     return await this.filesService.handleFileUpload(file);
   }
 
   @Get('/getFile') // http://localhost/api/files/getFile -> GET
-  getFile(@Res() res, @Body() file: FileParams) {
+  getFile(@Res() res: any, @Body() file: FileParams) {
     res.sendFile(
       path.join(__dirname, '..', '..', '..', 'uploads', file.filename),
     );

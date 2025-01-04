@@ -180,7 +180,7 @@ export class UsersService {
       });
 
       if (file) {
-        if (user.image) await this.filesService.deleteFile(user.image);
+        if (user.image) await this.filesService.deleteFile(user.image, 'users');
         await this.filesService.handleFileUpload(file);
         user.image = file.filename;
       }

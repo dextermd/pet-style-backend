@@ -9,7 +9,7 @@ import { JwtService } from '@nestjs/jwt';
     MulterModule.registerAsync({
       imports: [forwardRef(() => FilesModule)],
       useFactory: (filesService: FilesService) =>
-        filesService.getMulterOptions(),
+        filesService.getMulterOptions({ folderName: 'other' }),
       inject: [FilesService],
     }),
   ],
