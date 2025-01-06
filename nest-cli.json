@@ -1,8 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "./",
-  "entryFile": "dist/src/main.js",
+  "sourceRoot": "src",
+  "entryFile": "pet-style-backend/src/main",
   "compilerOptions": {
     "deleteOutDir": true
   }
