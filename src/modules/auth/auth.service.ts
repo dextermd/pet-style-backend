@@ -224,8 +224,10 @@ export class AuthService {
   }
 
   async groomerLogin(loginData: LoginAuthDto) {
+    const { email, password } = loginData;
+
     const userFound = await this.authRepository.findOne({
-      where: { email: loginData.email },
+      where: { email: email },
       relations: ['roles'],
     });
 
@@ -242,11 +244,10 @@ export class AuthService {
         HttpStatus.FORBIDDEN,
       );
     }
-
-    const isPasswordValid = await compare(
-      loginData.password,
-      userFound.password,
-    );
+    const isPasswordValid = await compare(password, userFound.password);
+    if (!isPasswordValid) {
+      throw new HttpException('Incorrect password', HttpStatus.FORBIDDEN);
+    }
 
     if (!isPasswordValid) {
       throw new HttpException('Incorrect password', HttpStatus.FORBIDDEN);
