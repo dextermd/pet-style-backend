@@ -8,7 +8,7 @@
   "scripts": {
     "build": "nest build && ls && cp serviceAccountKey.json dist/serviceAccountKey.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start && ls serviceAccountKey.json dist/serviceAccountKey.json",
+    "start": "nest start && ls && serviceAccountKey.json dist/serviceAccountKey.json",
     "start:dev": "nest start --watch ",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main ls && cp serviceAccountKey.json dist/serviceAccountKey.json",
