@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { User } from '../users/entities/user.entity';
-import { In, Repository } from 'typeorm';
+import { ILike, In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
@@ -56,7 +56,7 @@ export class AuthService {
   async login(loginData: LoginAuthDto) {
     const { email, password } = loginData;
     const userFound = await this.authRepository.findOne({
-      where: { email },
+      where: { email: ILike(email) },
       relations: ['roles', 'pets'],
     });
 
@@ -227,7 +227,7 @@ export class AuthService {
     const { email, password } = loginData;
 
     const userFound = await this.authRepository.findOne({
-      where: { email: email },
+      where: { email: ILike(email) },
       relations: ['roles'],
     });
 
