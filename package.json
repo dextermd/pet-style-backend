@@ -8,10 +8,10 @@
   "scripts": {
     "build": "nest build && cp serviceAccountKey.json dist/serviceAccountKey.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "nest start && cp serviceAccountKey.json dist/serviceAccountKey.json",
+    "start": "nest start && cp /root/pet-style-backend/serviceAccountKey.json /root/pet-style-backend/dist/",
     "start:dev": "nest start --watch ",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main  && cp serviceAccountKey.json dist/serviceAccountKey.json",
+    "start:prod": "node dist/main  && cp /root/pet-style-backend/serviceAccountKey.json /root/pet-style-backend/dist/",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
