@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: 'pet-style-backend',
-      script: 'dist/src/main.js',
+      script: 'dist/main.js',
       instances: 1,
       interpreter: '/root/.nvm/versions/node/v20.18.1/bin/node',
       autorestart: true,
