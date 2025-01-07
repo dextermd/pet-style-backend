@@ -12,16 +12,16 @@ export class Service extends EntityBaseWithDate(EntityBase(BaseEntity)) {
   @Column()
   nameRo: string;
 
-  @Column()
+  @Column({ nullable: true })
   descriptionRu: string;
 
-  @Column()
+  @Column({ nullable: true })
   descriptionRo: string;
 
   @Column()
   price: number;
 
-  @Column()
+  @Column({ nullable: true })
   duration: number;
 
   @Column({ default: false })
