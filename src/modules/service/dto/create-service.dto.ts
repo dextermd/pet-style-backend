@@ -9,12 +9,6 @@ export class CreateServiceDto {
   @IsString()
   nameRo: string;
 
-  @IsString()
-  descriptionRu: string;
-
-  @IsString()
-  descriptionRo: string;
-
   @IsNotEmpty()
   @IsString()
   price: string;
