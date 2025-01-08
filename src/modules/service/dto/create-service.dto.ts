@@ -9,16 +9,15 @@ export class CreateServiceDto {
   @IsString()
   nameRo: string;
 
-  @IsNotEmpty()
   @IsString()
   descriptionRu: string;
 
-  @IsNotEmpty()
   @IsString()
   descriptionRo: string;
 
   @IsNotEmpty()
-  price: number;
+  @IsString()
+  price: string;
 
   duration?: number;
 

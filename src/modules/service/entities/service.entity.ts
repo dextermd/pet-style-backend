@@ -19,7 +19,7 @@ export class Service extends EntityBaseWithDate(EntityBase(BaseEntity)) {
   descriptionRo: string;
 
   @Column()
-  price: number;
+  price: string;
 
   @Column({ nullable: true })
   duration: number;
