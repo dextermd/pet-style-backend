@@ -15,5 +15,5 @@ export class CreateServiceDto {
 
   duration?: number;
 
-  isActive: boolean;
+  isActive?: boolean;
 }

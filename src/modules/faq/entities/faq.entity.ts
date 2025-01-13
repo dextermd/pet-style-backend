@@ -17,4 +17,7 @@ export class Faq extends EntityBaseWithDate(EntityBase(BaseEntity)) {
 
   @Column()
   answerRo: string;
+
+  @Column({ default: false })
+  isActive: boolean;
 }

@@ -16,4 +16,6 @@ export class CreateFaqDto {
   @IsNotEmpty()
   @IsString()
   answerRo: string;
+
+  isActive?: boolean;
 }
