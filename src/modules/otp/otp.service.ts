@@ -47,7 +47,7 @@ export class OtpService {
   }
 
   private static getRandomNumber() {
-    return Math.floor(100000 + Math.random() * 999999);
+    return Math.floor(100000 + Math.random() * 900000);
   }
 
   async sendSmsMd(phone: string, messageToSend: string, code: number) {

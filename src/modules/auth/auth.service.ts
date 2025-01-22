@@ -34,8 +34,8 @@ export class AuthService {
     this.validAudiences = process.env.GOOGLE_CLIENT_IDS.split(',');
   }
 
-  async register(user: RegisterAuthDto) {
-    const { email } = user;
+  async register(registerAuthDto: RegisterAuthDto) {
+    const { email } = registerAuthDto;
     const emailExist = await this.authRepository.findOneBy({ email });
 
     if (emailExist) {
@@ -45,7 +45,7 @@ export class AuthService {
       );
     }
 
-    const newUser = this.authRepository.create(user);
+    const newUser = this.authRepository.create(registerAuthDto);
     newUser.roles = await this.rolesRepository.findBy({ id: In([2]) });
     newUser.provider = 'email';
 

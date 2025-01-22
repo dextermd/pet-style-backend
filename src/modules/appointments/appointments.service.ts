@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
-import { Between, Repository } from 'typeorm';
+import { Between, MoreThanOrEqual, Repository } from "typeorm";
 import { InjectRepository } from '@nestjs/typeorm';
 import { Appointment } from './entities/appointment.entity';
 import { Groomer } from '../groomers/entities/groomer.entity';
@@ -200,6 +200,7 @@ export class AppointmentsService {
       where: {
         user: { id: userId },
         status: 0,
+        appointment_date: MoreThanOrEqual(startOfDay(new Date())),
       },
       relations: ['user', 'pet', 'groomer'],
     });

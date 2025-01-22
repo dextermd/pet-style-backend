@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,7 +13,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import uploadToStorage from '../../utils/cloud_storage';
 import { Pet } from '../pets/entities/pet.entity';
 import { FilesService } from '../files/files.service';
-import { hash } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -28,25 +33,26 @@ export class UsersService {
 
   async update(userId: number, user: UpdateUserDto, newPassword: string) {
     if (userId == undefined) {
-      throw new HttpException('ID is undefined', HttpStatus.BAD_REQUEST);
+      throw new NotFoundException('ID is undefined');
     }
-
     try {
-      const userFound = await this.usersRepository.findOne({
-        where: {
-          id: userId,
-        },
+      const existingUser = await this.usersRepository.findOne({
+        where: { id: userId },
       });
 
-      const updateUser = Object.assign(userFound, user);
-
+      if (user.email) existingUser.email = user.email;
+      if (user.name) existingUser.name = user.name;
+      if (user.phone) existingUser.phone = user.phone;
       if (newPassword) {
-        updateUser.password = newPassword;
+        existingUser.password = newPassword;
       }
 
-      return await this.usersRepository.save(updateUser);
+      await this.usersRepository.save(existingUser);
     } catch (error) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to update user');
     }
   }
 

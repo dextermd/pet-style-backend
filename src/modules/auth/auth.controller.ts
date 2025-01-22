@@ -18,8 +18,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  async register(@Body() user: RegisterAuthDto) {
-    return await this.authService.register(user);
+  async register(@Body() registerAuthDto: RegisterAuthDto) {
+    return await this.authService.register(registerAuthDto);
   }
 
   @Post('login')
